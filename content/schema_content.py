@@ -1,51 +1,49 @@
 #!/usr/bin/env python
 # -*- coding:utf-8 -*-
 from Tkinter import *
-from TType import SchemaTypes
+from TType import *
+from .content import Content
 from collections import OrderedDict
-TAP = "    "
 
 
-class SchemaContent(object):
+class SchemaContent(Content):
+    """
+        Schema数据的构建
+    """
+
     def _create_schema_content_by_attrs(self):
+        """根据属性栏构建数据"""
         content_list = list()
         for i in range(getattr(self, 'attr_count')):
+            attribute = self._get_attribute(i)
 
-            attr_name = getattr(self, 'attr_names')[i].get()
-
-            if getattr(self, 'attr_nest_types')[i].get() != '':
-                type_name = getattr(self, 'attr_nest_types')[i].get()
-            else:
-                type_name = getattr(self, 'attr_types')[i].get()
-
-            if type_name == "List":
-                if getattr(self, 'attr_inner_nest_types')[i].get() != '':
-                    content_str = attr_name + " = fields.Nested(" + \
-                        getattr(self, 'attr_inner_nest_types')[i].get() + ", many=True, required="
+            content_line = self.TAP + attribute.name + " = fields."
+            if attribute.type_name == str(SchemaTType.List):
+                if attribute.inner_type_name not in SchemaTypes:
+                    content_line += "Nested(" + attribute.inner_type_name + ", many=True, "
                 else:
-                    content_str = attr_name + " = fields.List(fields." + \
-                        getattr(self, 'attr_inner_types')[i].get() + "(), required="
-            elif type_name == "Decimal":
-                content_str = attr_name + " = fields.Decimal(places=3" + ", required="
-            elif type_name in SchemaTypes:
-                content_str = attr_name + " = fields." + type_name + "(required="
+                    content_line += "List(fields." + attribute.inner_type_name + "(), "
+            elif attribute.type_name in SchemaTypes:
+                content_line += attribute.type_name + "("
             else:
-                content_str = attr_name + " = fields.Nested(" + type_name + "Schema, required="
+                content_line += ".Nested(" + attribute.type_name + "Schema, "
 
-            if getattr(self, 'attr_requireds')[i].get() == 'True':
-                content_list.append(TAP + content_str + "True, allow_none=False)\n")
+            if attribute.required == 'True':
+                content_line += "required=True, allow_none=False)\n"
             else:
-                content_list.append(TAP + content_str + "False, missing="
-                                    + self.__get_schema_missing(type_name) + ")\n")
+                content_line += "required=False, missing=" + \
+                                self.__get_schema_missing(attribute.type_name) + ")\n"
+            content_list.append(content_line)
 
         return content_list
 
     def __get_schema_missing(self, type_name):
-        if type_name == "Str":
+        """获取默认值"""
+        if type_name == str(SchemaTType.Str):
             return "u''"
-        elif type_name == "Bool":
+        elif type_name == str(SchemaTType.Bool):
             return "False"
-        elif type_name == "List":
+        elif type_name == str(SchemaTType.List):
             return "[]"
         elif type_name in SchemaTypes:
             return "0"

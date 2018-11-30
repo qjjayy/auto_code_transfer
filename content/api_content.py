@@ -2,44 +2,33 @@
 # -*- coding:utf-8 -*-
 from Tkinter import *
 from TType import *
+from .content import Content
 
 
-class APIContent(object):
+class APIContent(Content):
     """
         API文档数据的构建
     """
+
     def _create_api_content_by_attrs(self):
         """根据属性栏构建数据"""
         content_list = list()
         for i in range(getattr(self, 'attr_count')):
-            if getattr(self, 'attr_requireds')[i].get() == 'True':
-                required = "required"
-            else:
-                required = "optional"
+            attribute = self._get_attribute(i)
 
-            if getattr(self, 'attr_values')[i].get() != '':
-                value_name = ': ' + getattr(self, 'attr_values')[i].get()
+            if attribute.value != '':
+                value_name = ': ' + attribute.value
             else:
                 value_name = ' '
 
-            if getattr(self, 'attr_nest_types')[i].get() != '':
-                type_name = getattr(self, 'attr_nest_types')[i].get()
+            content_line = "+ " + attribute.name + value_name + " ("
+            if attribute.type_name == str(APITType.array):
+                content_line += "array[" + attribute.inner_type_name + "]"
             else:
-                type_name = getattr(self, 'attr_types')[i].get().split('_')[0]
+                content_line += attribute.type_name
+            content_line += ", " + attribute.required + ") - " + attribute.doc + "\n"
+            content_list.append(content_line)
 
-            if type_name == "array":
-                if getattr(self, 'attr_inner_nest_types')[i].get() != '':
-                    inner_type_name = getattr(self, 'attr_inner_nest_types')[i].get()
-                else:
-                    inner_type_name = getattr(self, 'attr_inner_types')[i].get().split('_')[0]
-
-                content_list.append("+ " + getattr(self, 'attr_names')[i].get() +
-                                    value_name + " (array[" + inner_type_name + "], " + required +
-                                    ") - " + getattr(self, 'attr_docs')[i].get() + "\n")
-            else:
-                content_list.append("+ " + getattr(self, 'attr_names')[i].get() +
-                                    value_name + " (" + type_name + ", " + required +
-                                    ") - " + getattr(self, 'attr_docs')[i].get() + "\n")
         return content_list
 
     def _create_api_content_by_text(self):

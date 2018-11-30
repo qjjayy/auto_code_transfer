@@ -17,12 +17,12 @@ APITypes = ["number_int",
             "Timestamp"]
 
 SchemaTypes = ["Int",
-               "Decimal",
+               "Float",
                "Str",
                "Bool",
                "List",
                "Arrow",
-               "Float"]
+               "Decimal"]
 
 IdlTypes = ["i32",
             "double",
@@ -40,37 +40,37 @@ ModelTypes = ["Integer",
 
 
 class APITType(Enum):
-    number_int = 0
-    number_double = 1
-    string = 2
-    boolean = 3
-    array = 4
-    Timestamp = 5
+    number_int = "number_int"
+    number_double = "number_double"
+    string = "string"
+    boolean = "boolean"
+    array = "array"
+    Timestamp = "Timestamp"
 
 
 class SchemaTType(Enum):
-    Int = 0
-    Decimal = 1
-    Str = 2
-    Bool = 3
-    List = 4
-    Arrow = 5
-    Float = 6
+    Int = "Int"
+    Float = "Float"
+    Str = "Str"
+    Bool = "Bool"
+    List = "List"
+    Arrow = "Arrow"
+    Decimal = "Decimal"
 
 
 class IdlTType(Enum):
-    i32 = 0
-    double = 1
-    string = 2
-    bool = 3
-    list = 4
-    i64 = 5
+    i32 = "i32"
+    double = "double"
+    string = "string"
+    bool = "bool"
+    list = "list"
+    i64 = "i64"
 
 
 class ModelTType(Enum):
-    Integer = 0
-    Numeric = 1
-    String = 2
-    Boolean = 3
-    ScalarListType = 4
-    ArrowType = 5
+    Integer = "Integer"
+    Numeric = "Numeric"
+    String = "String"
+    Boolean = "Boolean"
+    ScalarListType = "ScalarListType"
+    ArrowType = "ArrowType"
