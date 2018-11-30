@@ -22,7 +22,7 @@ class APIContent(Content):
                 value_name = ' '
 
             content_line = "+ " + attribute.name + value_name + " ("
-            if attribute.type_name == str(APITType.array):
+            if attribute.type_name == 'array':
                 content_line += "array[" + attribute.inner_type_name + "]"
             else:
                 content_line += attribute.type_name

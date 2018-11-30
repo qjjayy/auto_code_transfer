@@ -2,10 +2,11 @@
 # -*- coding:utf-8 -*-
 from Tkinter import *
 from TType import *
-from content import Content
+from content import *
+from collections import OrderedDict
 
 
-class PageConfig(Content):
+class PageConfig(APIContent, IdlContent, ModelContent, SchemaContent):
     """
         页面的基本配置
     """
@@ -13,13 +14,13 @@ class PageConfig(Content):
     def __init__(self, root):
         self.is_text = False  # 是否为原始文本页面
         # 设置页面基本属性
-        self.pages_config = {
-            "api": {'type': APITypes},
-            "schema": {'type': SchemaTypes},
-            "idl": {'type': IdlTypes},
-            "model": {'type': ModelTypes},
-            "request": {'type': None}
-        }
+        self.pages_config = OrderedDict([
+            ("api", {'type': APITypes}),
+            ("schema", {'type': SchemaTypes}),
+            ("idl", {'type': IdlTypes}),
+            ("model", {'type': ModelTypes}),
+            ("request", {'type': None})
+        ])
         # 设置页面对应的构建数据方法
         for key, value in self.pages_config.items():
             self.pages_config[key]['create_by_attr'] = getattr(
@@ -106,8 +107,8 @@ class PageConfig(Content):
     # def _create_idl_content_by_attrs(self):
     #     pass
 
-    def _create_model_content_by_attrs(self):
-        pass
+    # def _create_model_content_by_attrs(self):
+    #     pass
 
     def _create_request_content_by_attrs(self):
         pass

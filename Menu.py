@@ -2,11 +2,9 @@
 # -*- coding:utf-8 -*-
 from Tkinter import *
 from module import AttributeConfig
-from content import *
 
 
-class App(AttributeConfig,
-          APIContent, IdlContent, ModelContent, SchemaContent):
+class App(AttributeConfig):
     """
         代码转换工具1.0版
     """
@@ -49,6 +47,7 @@ class App(AttributeConfig,
 
     def change_menu(self):
         """在属性栏页面和文本页面之间切换"""
+        super(App, self).change_menu()
         if not self.is_text:
             self.is_text = True
             self.group.grid_remove()

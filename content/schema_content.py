@@ -2,7 +2,7 @@
 # -*- coding:utf-8 -*-
 from Tkinter import *
 from TType import *
-from .content import Content
+from .content import Content, TAP
 from collections import OrderedDict
 
 
@@ -17,8 +17,8 @@ class SchemaContent(Content):
         for i in range(getattr(self, 'attr_count')):
             attribute = self._get_attribute(i)
 
-            content_line = self.TAP + attribute.name + " = fields."
-            if attribute.type_name == str(SchemaTType.List):
+            content_line = TAP + attribute.name + " = fields."
+            if attribute.type_name == 'List':
                 if attribute.inner_type_name not in SchemaTypes:
                     content_line += "Nested(" + attribute.inner_type_name + ", many=True, "
                 else:
@@ -26,9 +26,9 @@ class SchemaContent(Content):
             elif attribute.type_name in SchemaTypes:
                 content_line += attribute.type_name + "("
             else:
-                content_line += ".Nested(" + attribute.type_name + "Schema, "
+                content_line += "Nested(" + attribute.type_name + "Schema, "
 
-            if attribute.required == 'True':
+            if attribute.required == 'required':
                 content_line += "required=True, allow_none=False)\n"
             else:
                 content_line += "required=False, missing=" + \
@@ -39,11 +39,11 @@ class SchemaContent(Content):
 
     def __get_schema_missing(self, type_name):
         """获取默认值"""
-        if type_name == str(SchemaTType.Str):
+        if type_name == 'Str':
             return "u''"
-        elif type_name == str(SchemaTType.Bool):
+        elif type_name == 'Bool':
             return "False"
-        elif type_name == str(SchemaTType.List):
+        elif type_name == 'List':
             return "[]"
         elif type_name in SchemaTypes:
             return "0"

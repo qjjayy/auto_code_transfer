@@ -2,7 +2,7 @@
 # -*- coding:utf-8 -*-
 from Tkinter import *
 from TType import *
-from .content import Content
+from .content import Content, TAP
 
 
 class IdlContent(Content):
@@ -16,8 +16,8 @@ class IdlContent(Content):
         for i in range(getattr(self, 'attr_count')):
             attribute = self._get_attribute(i)
 
-            content_line = self.TAP + str(i + 1) + ": " + attribute.required
-            if attribute.type_name == str(IdlTType.list):
+            content_line = TAP + str(i + 1) + ": " + attribute.required
+            if attribute.type_name == 'list':
                 content_line += " list<" + attribute.inner_type_name + "> "
             else:
                 content_line += " " + attribute.type_name + " "

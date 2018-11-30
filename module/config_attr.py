@@ -44,7 +44,7 @@ class AttributeConfig(PageConfig):
                 Label(self.group, text=property_name, width=configs.get('width')).grid(row=0, column=i)
             setattr(self, 'attr_%ss' % property_name, [StringVar()])  # 存储各页面对应的输入值
             setattr(self, 'entry_%ss' % property_name, list())        # 存储各页面对应的输入框
-            if 'types' not in configs:  # Entry
+            if 'type' not in configs:  # Entry
                 getattr(self, 'entry_%ss' % property_name).append(
                     Entry(self.group,
                           width=configs.get('width'),
@@ -54,7 +54,7 @@ class AttributeConfig(PageConfig):
                     Combobox(self.group,
                              width=configs.get('width'),
                              textvariable=getattr(self, 'attr_%ss' % property_name)[0],
-                             values=configs[1]))
+                             values=configs.get('type')))
                 getattr(self, 'entry_%ss' % property_name)[0].current(0)
             if self.__is_column_show(i):
                 getattr(self, 'entry_%ss' % property_name)[0].grid(row=1, column=i)
@@ -78,7 +78,7 @@ class AttributeConfig(PageConfig):
         for i, property_name in enumerate(self.properties.keys()):
             configs = self.properties.get(property_name)
             getattr(self, 'attr_%ss' % property_name).append(StringVar())
-            if 'types' not in configs:
+            if 'type' not in configs:
                 getattr(self, 'entry_%ss' % property_name).append(
                     Entry(self.group, width=configs.get('width'),
                           textvariable=getattr(self, 'attr_%ss' % property_name)[self.attr_count]))
@@ -86,7 +86,7 @@ class AttributeConfig(PageConfig):
                 getattr(self, 'entry_%ss' % property_name).append(
                     Combobox(self.group, width=configs.get('width'),
                              textvariable=getattr(self, 'attr_%ss' % property_name)[self.attr_count],
-                             values=configs[1]))
+                             values=configs.get('type')))
                 getattr(self, 'entry_%ss' % property_name)[self.attr_count].current(0)
             if self.__is_column_show(i):
                 getattr(self, 'entry_%ss' % property_name)[self.attr_count].grid(row=self.attr_count + 1, column=i)
@@ -231,6 +231,10 @@ class AttributeConfig(PageConfig):
             idl_value = self.idl_nested_source[value] + '.' + value
             attr_value.set(idl_value)
 
+    def change_menu(self):
+        """特殊处理"""
+        map(self.__truncate_idl_nested_types, getattr(self, 'attr_nest_types'))
+        map(self.__truncate_idl_nested_types, getattr(self, 'attr_inner_nest_types'))
 
 if __name__ == '__main__':
     root = Tk()

@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 # -*- coding:utf-8 -*-
+TAP = "    "
 
 
 class Attribute(object):
@@ -14,10 +15,8 @@ class Attribute(object):
 
 class Content(object):
 
-    def __init__(self):
-        self.TAP = "    "
-
     def _get_attribute(self, index):
+        """获取当前数据的属性"""
         name = getattr(self, 'attr_names')[index].get()
 
         if getattr(self, 'attr_requireds')[index].get() == 'True':
