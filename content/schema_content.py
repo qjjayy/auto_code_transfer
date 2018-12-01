@@ -51,75 +51,76 @@ class SchemaContent(Content):
             return "None"
 
     def _create_schema_content_by_text(self):
+        """解析文本内容构建数据"""
         text_content = getattr(self, 'text_area').get(1.0, END).split("\n")
-        for row in range(len(text_content)):
-            result_dict = self.__extract_schema_line(text_content[row])
-            if not result_dict:
+        read_index = 0
+        for write_index in range(len(text_content)):
+            content_lines = [text_content[read_index]]
+            while not text_content[read_index + 1].endswith(')'):
+                read_index += 1
+                content_lines.append(text_content[read_index])
+
+            attribute = self.__extract_schema_line(content_lines)
+            if not attribute:
                 continue
-            print result_dict
 
             getattr(self, 'add_attr')()
-
-            getattr(self, 'attr_names')[row].set(result_dict['attr_name'])
-
-            type_name = result_dict['type_name']
-            inner_type_name = result_dict.get('inner_type_name')
-            if type_name == 'Nested':
-                if result_dict.get('many', False):
-                    getattr(self, 'inner_type_button')['state'] = NORMAL
-                    getattr(self, 'entry_inner_types')[row]['state'] = NORMAL
-                    self.__set_type(row, getattr(self, 'type_column'), 'List')
-                    self.__set_type(row, getattr(self, 'inner_type_column'), inner_type_name, 'inner_')
+            getattr(self, 'attr_names')[write_index].set(attribute.name)
+            self._set_required(write_index, attribute.required, required_value='True')
+            # 设置数值类型
+            attr_type = attribute.type_name
+            if attr_type == 'Nested':
+                attr_special = attribute.special
+                attr_type = attr_special[0: attr_special.index('Schema')]
+                if 'many=True' in attribute.special:
+                    self._set_list_type(write_index, attr_type)
                 else:
-                    self.__set_type(row, getattr(self, 'type_column'), inner_type_name)
-            elif type_name == 'List':
-                getattr(self, 'inner_type_button')['state'] = NORMAL
-                getattr(self, 'entry_inner_types')[row]['state'] = NORMAL
-                self.__set_type(row, getattr(self, 'type_column'), 'List')
-                self.__set_type(row, getattr(self, 'inner_type_column'), inner_type_name, 'inner_')
+                    self._set_sole_type(write_index, attr_type)
+            elif attr_type == self.current_list_type:
+                attr_special = attribute.special
+                attr_type = attr_special[attr_special.index('.') + 1: attr_special.index('(')]
+                self._set_list_type(write_index, attr_type)
             else:
-                self.__set_type(row, getattr(self, 'type_column'), type_name)
+                self._set_sole_type(write_index, attr_type)
 
-            if result_dict.get('required', 'False') == 'True':
-                getattr(self, 'attr_requireds')[row].set('True')
-            else:
-                getattr(self, 'attr_requireds')[row].set('False')
-
-    def __set_type(self, row, column, type_name, is_inner=''):
-        if type_name in getattr(self, 'get_types')()[0]:
-            getattr(self, 'attr_%snest_types' % is_inner)[row].set('')
-            getattr(self, 'attr_%stypes' % is_inner)[row].set(type_name)
-            getattr(self, 'entry_%snest_types' % is_inner)[row].grid_remove()
-            getattr(self, 'entry_%stypes' % is_inner)[row].grid(row=row + 1, column=column)
-        else:
-            getattr(self, 'entry_%stypes' % is_inner)[row].current(0)
-            getattr(self, 'attr_%snest_types' % is_inner)[row].set(type_name)
-            getattr(self, 'entry_%stypes' % is_inner)[row].grid_remove()
-            getattr(self, 'entry_%snest_types' % is_inner)[row].grid(row=row + 1, column=column)
-
-    def __extract_schema_line(self, text_line):
-        if len(text_line) < 1:
-            return None
+    def __extract_schema_line(self, content_lines):
+        """解析一行文本"""
+        result_line = list()
+        for content_line in content_lines:
+            if len(content_line) < 1:
+                return None
+        # 拼接多行
+        text_line = ''
+        for content_line in content_lines:
+            text_line += content_line
+        # 数值名
         text_line = text_line.split()
-        result_dict = OrderedDict()
-        content = ''
-        for i in range(2, len(text_line)):
-            content += text_line[i]
-        first_index = content.index('(')
-        config = content[first_index + 1: -1].split(',')
+        result_line.append(text_line[0])
+        # 数值类型
+        field = text_line.pop(2)
+        type_name = field[0: field.index('(')].split('.')[1]
+        result_line.append(type_name)
+        # 特殊数值类型
+        configs = field[field.index('(') + 1: -1].split(',')
+        if '=' not in configs[0]:
+            special = configs[0].replace('\n', '').replace(' ', '')
+        else:
+            special = ''
+        # 数值required
+        required = 'False'
+        for config in configs:
+            if 'required=True' in config:
+                required = 'True'
+            elif 'many=True' in config:
+                special += ',' + config
+        result_line.append(required)
+        result_line.append(special)
 
-        result_dict['attr_name'] = text_line[0]
-        result_dict['type_name'] = content[7: first_index]
-        for config_item in config:
-            if '=' not in config_item:
-                if '.' in config_item and '(' in config_item:
-                    first_index = config_item.index('.')
-                    last_index = config_item.index('(')
-                    result_dict['inner_type_name'] = config_item[first_index + 1: last_index]
-                else:
-                    result_dict['inner_type_name'] = config_item
-            else:
-                split_index = config_item.index('=')
-                result_dict[config_item[0: split_index]] = config_item[split_index + 1:]
-
-        return result_dict
+        attribute = self._get_attribute_from_text(
+            result_line,
+            name_index=0,
+            required_index=2,
+            type_name_index=1,
+            special_index=3
+        )
+        return attribute
