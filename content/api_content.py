@@ -18,10 +18,10 @@ class APIContent(Content):
             if attribute.value != '':
                 value_name = ': ' + attribute.value
             else:
-                value_name = ' '
+                value_name = ''
 
             content_line = "+ " + attribute.name + value_name + " ("
-            if attribute.type_name == 'array':
+            if attribute.type_name == self.current_list_type:
                 content_line += "array[" + attribute.inner_type_name + "]"
             else:
                 content_line += attribute.type_name
@@ -59,27 +59,27 @@ class APIContent(Content):
             return None
         text_line = text_line.split()
         text_line.remove('+')
-        text_line.remove('-')
+        if '-' in text_line:
+            text_line.remove('-')
         result_line = list()
-        for text_item in text_line:
-            if ':' in text_item:
+        for i, text_item in enumerate(text_line):
+            if text_item.endswith(':'):
                 text_item = text_item[0: len(text_item) - 1]
             elif text_item.startswith('(') and text_item.endswith(','):
+                if i == 1:  # type_name 可能为第二个参数或者第三个参数
+                    result_line.append('')
                 text_item = text_item[1: len(text_item) - 1]
             elif not text_item.startswith('(') and text_item.endswith(')'):
                 text_item = text_item[0: len(text_item) - 1]
             result_line.append(text_item)
 
-        if len(result_line) == 5:  # 获取默认值
-            result_line.append(result_line.pop(1))
-
         attribute = self._get_attribute_from_text(
             result_line,
             name_index=0,
-            required_index=2,
-            doc_index=3,
-            value_index=4,
-            type_name_index=1
+            required_index=3,
+            doc_index=4,
+            value_index=1,
+            type_name_index=2
         )
         return attribute
 

@@ -29,10 +29,11 @@ class App(AttributeConfig):
         """编辑当前页面的内容"""
         if not self.is_text:
             self.content_map[self.current_page_name] = self.create_by_attr_func()
-            self.content_show = self.content_map[self.current_page_name]
         else:
             self.remove_all()
             self.create_by_text_func()
+            self.content_map[self.current_page_name] = self.text_area.get(1.0, END)
+        self.content_show = self.content_map[self.current_page_name]
 
     def create_global_content(self):
         """编辑全部页面的内容"""

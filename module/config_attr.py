@@ -233,8 +233,9 @@ class AttributeConfig(PageConfig):
 
     def change_menu(self):
         """特殊处理"""
-        map(self.__truncate_idl_nested_types, getattr(self, 'attr_nest_types'))
-        map(self.__truncate_idl_nested_types, getattr(self, 'attr_inner_nest_types'))
+        pass
+        # map(self.__truncate_idl_nested_types, getattr(self, 'attr_nest_types'))
+        # map(self.__truncate_idl_nested_types, getattr(self, 'attr_inner_nest_types'))
 
 if __name__ == '__main__':
     root = Tk()

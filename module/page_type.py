@@ -119,11 +119,11 @@ class PageConfig(APIContent, IdlContent, ModelContent, SchemaContent):
     # def _create_schema_content_by_text(self):
     #     pass
 
-    def _create_idl_content_by_text(self):
-        pass
-
-    def _create_model_content_by_text(self):
-        pass
+    # def _create_idl_content_by_text(self):
+    #     pass
+    #
+    # def _create_model_content_by_text(self):
+    #     pass
 
     def _create_request_content_by_text(self):
         pass

@@ -16,7 +16,7 @@ class IdlContent(Content):
             attribute = self._get_attribute(i)
 
             content_line = TAP + str(i + 1) + ": " + attribute.required
-            if attribute.type_name == 'list':
+            if attribute.type_name == self.current_list_type:
                 content_line += " list<" + attribute.inner_type_name + "> "
             else:
                 content_line += " " + attribute.type_name + " "

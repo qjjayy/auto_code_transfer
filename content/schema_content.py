@@ -56,7 +56,8 @@ class SchemaContent(Content):
         read_index = 0
         for write_index in range(len(text_content)):
             content_lines = [text_content[read_index]]
-            while not text_content[read_index + 1].endswith(')'):
+            while (len(text_content[read_index]) > 1 and
+                    not text_content[read_index].endswith(')')):
                 read_index += 1
                 content_lines.append(text_content[read_index])
 
@@ -83,6 +84,10 @@ class SchemaContent(Content):
             else:
                 self._set_sole_type(write_index, attr_type)
 
+            read_index += 1
+            if read_index > len(text_content) - 1:
+                break
+
     def __extract_schema_line(self, content_lines):
         """解析一行文本"""
         result_line = list()
@@ -93,26 +98,30 @@ class SchemaContent(Content):
         text_line = ''
         for content_line in content_lines:
             text_line += content_line
+        pre_line = text_line[0: text_line.index('(')]
+        config_line = text_line[text_line.index('(') + 1: -1]
         # 数值名
-        text_line = text_line.split()
-        result_line.append(text_line[0])
+        pre_line = pre_line.split()
+        result_line.append(pre_line[0])
         # 数值类型
-        field = text_line.pop(2)
-        type_name = field[0: field.index('(')].split('.')[1]
+        type_name = pre_line[2]
+        if '.' in type_name:
+            type_name = type_name.split('.')[1]
         result_line.append(type_name)
         # 特殊数值类型
-        configs = field[field.index('(') + 1: -1].split(',')
-        if '=' not in configs[0]:
-            special = configs[0].replace('\n', '').replace(' ', '')
-        else:
-            special = ''
+        config_line = config_line.split()
+        special = ''
+        if '=' not in config_line[0]:
+            special = config_line[0][0: config_line[0].index(',')]
+            config_line.pop(0)
         # 数值required
         required = 'False'
-        for config in configs:
-            if 'required=True' in config:
+        for text in config_line:
+            if 'many=True' in text:
+                special += ',' + text
+            elif 'required=True' in text:
                 required = 'True'
-            elif 'many=True' in config:
-                special += ',' + config
+
         result_line.append(required)
         result_line.append(special)
 

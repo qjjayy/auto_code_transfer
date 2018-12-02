@@ -14,7 +14,9 @@ APITypes = ["number_int",
             "string",
             "boolean",
             "array",
-            "Timestamp"]
+            "Timestamp",
+            "number_double",
+            "string"]
 
 SchemaTypes = ["Int",
                "Float",
@@ -22,21 +24,26 @@ SchemaTypes = ["Int",
                "Bool",
                "List",
                "Arrow",
-               "Decimal"]
+               "Decimal",
+               "Str"]
 
 IdlTypes = ["i32",
             "double",
             "string",
             "bool",
             "list",
-            "i64"]
+            "i32",
+            "double",
+            "string"]
 
 ModelTypes = ["Integer",
               "Numeric",
               "String",
               "Boolean",
               "ScalarListType",
-              "ArrowType"]
+              "ArrowType",
+              "Numeric",
+              "ChoiceType"]
 
 
 class APITType(Enum):
