@@ -5,6 +5,7 @@ TAP = "    "
 
 # 对长string仍然有bug,但就这样了，手动修改吧
 def format_request(request_content):
+    """格式化dict，目前废弃的功能"""
     item_list = list()
     for item in request_content:
         item_list.append(item)

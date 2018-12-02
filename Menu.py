@@ -7,6 +7,7 @@ from module import AttributeConfig
 class App(AttributeConfig):
     """
         代码转换工具1.0版
+        （目前开发状态：初级可用，但仍然有很多bug和不支持的类型转换，持续修改和升级中）
     """
 
     def __init__(self, root):
