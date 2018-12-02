@@ -1,11 +1,11 @@
-#.env
-#.python-version
-#**/*.pyc
+.env
+.python-version
+**/*.pyc
 
 # log file
 log/
-#*.log
-#*.log.*
+*.log
+*.log.*
 
 # idea/ ignore
-# .idea/
+.idea/
