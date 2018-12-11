@@ -6,7 +6,7 @@ from content import *
 from collections import OrderedDict
 
 
-class PageConfig(APIContent, IdlContent, ModelContent, SchemaContent):
+class PageConfig(APIContent, IdlContent, ModelContent, SchemaContent, RequestContent):
     """
         页面的基本配置
     """
@@ -19,7 +19,7 @@ class PageConfig(APIContent, IdlContent, ModelContent, SchemaContent):
             ("schema", {'type': SchemaTypes}),
             ("idl", {'type': IdlTypes}),
             ("model", {'type': ModelTypes}),
-            ("request", {'type': None})
+            ("request", {'type': IdlTypes})
         ])
         # 设置页面对应的构建数据方法
         for key, value in self.pages_config.items():
@@ -110,8 +110,8 @@ class PageConfig(APIContent, IdlContent, ModelContent, SchemaContent):
     # def _create_model_content_by_attrs(self):
     #     pass
 
-    def _create_request_content_by_attrs(self):
-        pass
+    # def _create_request_content_by_attrs(self):
+    #     pass
 
     # def _create_api_content_by_text(self):
     #     pass
